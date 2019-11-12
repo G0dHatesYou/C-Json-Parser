@@ -79,4 +79,3 @@
 		std::vector<Token> tokenize(std::string jsonString);
 		JsonObject jsonParse(std::vector<Token> v, int startPos, int& endPos);
 	}
-

@@ -181,7 +181,10 @@ double JsonObject::asDouble()
 
 bool JsonObject::asBool()
 {
-	if (mStringValue == "true") return true;
+	if (mStringValue == "true")
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -229,7 +232,10 @@ inline bool operator== (const JsonObject &left, const JsonObject &right)
 
 JsonObject JsonObject::operator[](string s)
 {
-	if (mMapIndex.find(s) == mMapIndex.end()) return JsonObject();
+	if (mMapIndex.find(s) == mMapIndex.end())
+	{
+		return JsonObject();
+	}
 	return mProperties[mMapIndex[s]].second;
 }
 
@@ -400,8 +406,7 @@ namespace parser
 					continue;
 				}
 
-				tokens.push_back(Token(tokenizeString.substr(pos), tokenUnknown));
-				pos = tokenizeString.length();
+				throw BadParse();
 			}
 
 			index = skipWhitespaces(source, next);
@@ -527,7 +532,10 @@ namespace parser
 		ifstream in(filename.c_str());
 		string str = "";
 		string tmp;
-		while (getline(in, tmp)) str += tmp;
+		while (getline(in, tmp))
+		{
+			str += tmp;
+		}
 		in.close();
 		return parser::parse(str);
 	}

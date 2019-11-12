@@ -9,7 +9,6 @@
 using namespace std;
 
 int main() {
-
 	JsonObject obj = parser::parseFile("data.json");
 	cout << obj.toString() << endl;
 	system("pause");
