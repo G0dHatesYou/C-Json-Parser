@@ -485,6 +485,7 @@ namespace parser
 			return current;
 		}
 
+
 		if (tokens[startPos].getType() == tokenString)
 		{
 			current.setType(jsonString);
