@@ -6,6 +6,8 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
+#include <queue>
+#include <future>
 using namespace std;
 
 string deserialize(const string& inputString)
@@ -287,8 +289,45 @@ int parser::skipWhitespaces(const string& source, int i)
 
 namespace parser
 {
+	std::vector<Token> tokenizeMultithreaded(std::string jsonString)
+	{
+		vector<Token> tokens;
+
+		vector<string> strings;
+		istringstream f(jsonString);
+		string s;
+		while (getline(f, s, '\n')) {
+			strings.push_back(s);
+		}
+
+		try
+		{
+			std::queue<std::future<std::vector<Token>>> results;
+			
+			for (auto jsonRow : strings)
+			{
+				results.emplace(std::async([jsonRow]() { return tokenize(jsonRow); }));
+			}
+
+			while (!results.empty())
+			{
+				auto tempTokens = results.front().get();
+				std::cout << "Done" << endl;
+				tokens.insert(tokens.end(), tempTokens.begin(), tempTokens.end());
+				results.pop();
+			}
+		}
+		catch (const std::exception& exception)
+		{
+			std::cout << "error occured while processing " << exception.what() << std::endl;
+		}
+
+		return tokens;
+	}
+
 	vector<parser::Token> parser::tokenize(string source)
 	{
+		std::cout << "Thread" << endl;
 		source += " ";
 		vector<Token> tokens;
 		int index = skipWhitespaces(source, 0);
@@ -516,7 +555,7 @@ namespace parser
 		return current;
 	}
 
-	JsonObject parser::parse(const string& jsonString)
+	JsonObject parser::parse(const string& jsonString, bool multithreaded)
 	{
 		if (jsonString.empty())
 		{
@@ -524,6 +563,10 @@ namespace parser
 		}
 
 		int endPos = 0;
+		if (multithreaded)
+		{
+			return jsonParse(tokenizeMultithreaded(jsonString), 0, endPos);
+		}
 		return jsonParse(tokenize(jsonString), 0, endPos);
 	}
 

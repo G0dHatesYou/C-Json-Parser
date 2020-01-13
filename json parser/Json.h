@@ -70,12 +70,13 @@
 			tokenType mType;
 		};
 
-		JsonObject parse(const std::string& jsonString);
+		JsonObject parse(const std::string& jsonString, bool multithreaded = false);
 		JsonObject parseFile(const std::string& filePath);
 
 		int nextWhitespace(const std::string& jsonString, int pos);
 		int skipWhitespaces(const std::string& jsonString, int pos);
 
+		std::vector<Token> tokenizeMultithreaded(std::string jsonString);
 		std::vector<Token> tokenize(std::string jsonString);
 		JsonObject jsonParse(std::vector<Token> v, int startPos, int& endPos);
 	}
